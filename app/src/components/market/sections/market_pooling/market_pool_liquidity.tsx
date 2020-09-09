@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
 import styled from 'styled-components'
 
-import { DOCUMENT_FAQ } from '../../../../common/constants'
+import { DEFAULT_GELATO_CONDITION, DOCUMENT_FAQ } from '../../../../common/constants'
 import {
   useCollateralBalance,
   useConnectedWeb3Context,
@@ -16,6 +16,7 @@ import {
 import { ERC20Service } from '../../../../services'
 import { CPKService } from '../../../../services/cpk'
 import { getLogger } from '../../../../util/logger'
+import { getDefaultGelatoCondition } from '../../../../util/networks'
 import { RemoteData } from '../../../../util/remote_data'
 import {
   calcAddFundingSendAmounts,
@@ -24,8 +25,8 @@ import {
   formatBigNumber,
   formatNumber,
 } from '../../../../util/tools'
-import { MarketMakerData, OutcomeTableValue, Status, Ternary } from '../../../../util/types'
-import { ButtonContainer, ButtonTab } from '../../../button'
+import { GelatoData, MarketMakerData, OutcomeTableValue, Status, Ternary } from '../../../../util/types'
+import { Button, ButtonContainer, ButtonTab } from '../../../button'
 import { ButtonType } from '../../../button/button_styling_types'
 import { BigNumberInput, TextfieldCustomPlaceholder, TitleValue } from '../../../common'
 import { BigNumberInputReturn } from '../../../common/form/big_number_input'
@@ -34,6 +35,7 @@ import { ModalTransactionResult } from '../../../modal/modal_transaction_result'
 import { GenericError, MarketBottomNavButton } from '../../common/common_styled'
 import { GridTransactionDetails } from '../../common/grid_transaction_details'
 import { OutcomeTable } from '../../common/outcome_table'
+import { RecommendedServices } from '../../common/recommended_services'
 import { SetAllowance } from '../../common/set_allowance'
 import { TransactionDetailsCard } from '../../common/transaction_details_card'
 import { TransactionDetailsLine } from '../../common/transaction_details_line'
@@ -101,11 +103,12 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
   } = marketMakerData
 
   const context = useConnectedWeb3Context()
-  const { account, library: provider } = context
+  const { account, library: provider, networkId } = context
   const cpk = useCpk()
 
   const { buildMarketMaker, conditionalTokens } = useContracts(context)
   const marketMaker = buildMarketMaker(marketMakerAddress)
+  const defaultCondition = getDefaultGelatoCondition(networkId)
 
   const signer = useMemo(() => provider.getSigner(), [provider])
   const [allowanceFinished, setAllowanceFinished] = useState(false)
@@ -121,6 +124,7 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
   const [modalTitle, setModalTitle] = useState<string>('')
   const [message, setMessage] = useState<string>('')
   const [isModalTransactionResultOpen, setIsModalTransactionResultOpen] = useState(false)
+  const [gelatoCondition, setGelatoCondition] = useState<GelatoData>(defaultCondition)
 
   useEffect(() => {
     setIsNegativeAmountToFund(formatBigNumber(amountToFund, collateral.decimals).includes('-'))
@@ -325,14 +329,21 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
             title="Total Pool Tokens"
             value={`${formatBigNumber(totalPoolShares, collateral.decimals)} ${collateral.symbol}`}
           />
-        </UserDataRow>
-        <UserDataRow>
-          <UserDataTitleValue
-            state={userEarnings.gt(0) ? ValueStates.success : undefined}
-            title="Your Earnings"
-            value={`${userEarnings.gt(0) ? '+' : ''}${formatNumber(
-              formatBigNumber(userEarnings, collateral.decimals),
-            )} ${collateral.symbol}`}
+        )}
+        {/* <RecommendedServices
+          resolution={values.resolution !== null ? values.resolution : new Date()}
+          gelatoCondition={gelatoCondition}
+          handleGelatoConditionChange={handleGelatoConditionChange}
+          handleGelatoConditionInputsChange={handleGelatoConditionInputsChange}
+          noMarginBottom={false}
+          collateral={collateral}
+        /> */}
+        {activeTab === Tabs.deposit && showSetAllowance && (
+          <SetAllowance
+            collateral={collateral}
+            finished={allowanceFinished && RemoteData.is.success(allowance)}
+            loading={RemoteData.is.asking(allowance)}
+            onUnlock={unlockCollateral}
           />
           <UserDataTitleValue
             state={totalEarnings.gt(0) ? ValueStates.success : undefined}
