@@ -9,6 +9,7 @@ import { CommonDisabledCSS } from '../common_styled'
 interface Props {
   disabled?: boolean
   minDate?: any
+  maxDate?: any
   name: string
   onChange: any
   selected?: any
@@ -104,7 +105,7 @@ const CalendarPortal = (props: CalendarPortalProps) => {
 }
 
 export const DateField = (props: Props) => {
-  const { disabled, minDate, name, onChange, selected, ...restProps } = props
+  const { disabled, maxDate, minDate, name, onChange, selected, ...restProps } = props
 
   const handleChange = (date: Maybe<Date>) => {
     onChange(date ? convertLocalToUTC(date) : date)
@@ -117,6 +118,7 @@ export const DateField = (props: Props) => {
         calendarClassName="customCalendar"
         dateFormat="MMMM d, yyyy h:mm aa"
         disabled={disabled}
+        maxDate={maxDate}
         minDate={minDate}
         name={name}
         onChange={handleChange}

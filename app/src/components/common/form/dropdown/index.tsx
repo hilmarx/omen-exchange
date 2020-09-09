@@ -116,7 +116,7 @@ const Wrapper = styled.div<{ isOpen: boolean; disabled: boolean; dropdownVariant
   ${props => (props.disabled ? DropdownDisabledCSS : '')}
   ${props => (props.dropdownVariant === DropdownVariant.pill ? DropdownVariantPillCSS : '')}
   ${props => (props.dropdownVariant === DropdownVariant.card ? DropdownVariantCardCSS : '')}
- 
+
 `
 
 const DropdownButton = styled.div`
@@ -366,6 +366,9 @@ export const Dropdown: React.FC<Props> = props => {
   }, [isOpen])
 
   const activeItem = getItem(currentItemIndex)
+
+  console.log(activeItem)
+  console.log(currentItemIndex)
 
   return (
     <>

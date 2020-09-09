@@ -21,7 +21,7 @@ import {
   formatBigNumber,
   formatDate,
 } from '../../../../../../util/tools'
-import { Arbitrator, Ternary, Token } from '../../../../../../util/types'
+import { Arbitrator, GelatoData, Ternary, Token } from '../../../../../../util/types'
 import { Button } from '../../../../../button'
 import { ButtonType } from '../../../../../button/button_styling_types'
 import { BigNumberInput, SubsectionTitle, TextfieldCustomPlaceholder } from '../../../../../common'
@@ -48,6 +48,7 @@ import { CreateCard } from '../../../../common/create_card'
 import { CurrencySelector } from '../../../../common/currency_selector'
 import { DisplayArbitrator } from '../../../../common/display_arbitrator'
 import { GridTransactionDetails } from '../../../../common/grid_transaction_details'
+import { RecommendedServices } from '../../../../common/recommended_services'
 import { SetAllowance } from '../../../../common/set_allowance'
 import { TradingFeeSelector } from '../../../../common/trading_fee_selector'
 import { TransactionDetailsCard } from '../../../../common/transaction_details_card'
@@ -161,6 +162,7 @@ interface Props {
     question: string
     category: string
     resolution: Date | null
+    gelatoCondition: GelatoData
     arbitrator: Arbitrator
     spread: number
     funding: BigNumber
@@ -169,11 +171,14 @@ interface Props {
   marketCreationStatus: MarketCreationStatus
   handleCollateralChange: (collateral: Token) => void
   handleTradingFeeChange: (fee: string) => void
+  handleGelatoConditionChange: (gelatoCondition: GelatoData) => any
+  handleGelatoConditionInputsChange: (newDate: Date | null) => any
   handleChange: (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement> | BigNumberInputReturn) => any
   resetTradingFee: () => void
 }
 
 const FundingAndFeeStep: React.FC<Props> = (props: Props) => {
+  console.log('FundingAndFeeStep')
   const context = useConnectedWeb3Context()
   const cpk = useCpk()
   const balance = useSelector((state: BalanceState): Maybe<BigNumber> => state.balance && new BigNumber(state.balance))
@@ -185,6 +190,8 @@ const FundingAndFeeStep: React.FC<Props> = (props: Props) => {
     back,
     handleChange,
     handleCollateralChange,
+    handleGelatoConditionChange,
+    handleGelatoConditionInputsChange,
     handleTradingFeeChange,
     marketCreationStatus,
     resetTradingFee,
@@ -386,6 +393,14 @@ const FundingAndFeeStep: React.FC<Props> = (props: Props) => {
             hyperlinkDescription={''}
           />
         )}
+        <RecommendedServices
+          collateral={collateral}
+          gelatoCondition={values.gelatoCondition}
+          handleGelatoConditionChange={handleGelatoConditionChange}
+          handleGelatoConditionInputsChange={handleGelatoConditionInputsChange}
+          noMarginBottom={false}
+          resolution={values.resolution !== null ? values.resolution : new Date()}
+        />
         {showSetAllowance && (
           <SetAllowance
             collateral={collateral}
@@ -394,6 +409,7 @@ const FundingAndFeeStep: React.FC<Props> = (props: Props) => {
             onUnlock={unlockCollateral}
           />
         )}
+
         <ButtonContainerFullWidth>
           <LeftButton
             buttonType={ButtonType.secondaryLine}
