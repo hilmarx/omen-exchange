@@ -29,21 +29,24 @@ interface Props {
 
 // Add Gelato Condition Data Fetching here
 const MarketValidation: React.FC<Props> = (props: Props) => {
+  console.log('Market Routes')
   const context = useConnectedWeb3Context()
   const { account, library: provider } = context
-  const cpk = useCpk()
 
   const { marketMakerAddress } = props
 
   // Validate contract REALLY exists
   const contractExists = useCheckContractExists(marketMakerAddress, context)
+
   const { fetchData, marketMakerData } = useMarketMakerData(marketMakerAddress.toLowerCase())
 
+  const cpk = useCpk()
   const cpkAddress = '0x9671dC03ec719ff66C561e2dc73411b041548B73'
+  const { submittedTaskReceipt, withdrawDate } = useGelatoSubmittedTasks(cpkAddress, marketMakerAddress, context)
+  console.log(submittedTaskReceipt)
+  console.log(withdrawDate)
 
-  useGelatoSubmittedTasks(cpkAddress, marketMakerAddress, context)
-
-  // useInterval(fetchData, FETCH_DETAILS_INTERVAL)
+  useInterval(fetchData, FETCH_DETAILS_INTERVAL)
   if (!contractExists) {
     logger.log(`Market address not found`)
     return <MarketNotFound />
@@ -80,7 +83,17 @@ const MarketValidation: React.FC<Props> = (props: Props) => {
         <Route
           exact
           path="/:address/pool-liquidity"
-          render={props => <MarketPoolLiquidityPage {...props} marketMakerData={marketMakerData} />}
+          render={props => (
+            <MarketPoolLiquidityPage
+              {...props}
+              gelatoTask={
+                submittedTaskReceipt !== null && withdrawDate !== null
+                  ? { submittedTaskReceipt, withdrawDate }
+                  : undefined
+              }
+              marketMakerData={marketMakerData}
+            />
+          )}
         />
       )}
       {!account ? (

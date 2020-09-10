@@ -24,7 +24,7 @@ import {
   calcRemoveFundingSendAmounts,
   formatBigNumber,
 } from '../../../../util/tools'
-import { GelatoData, MarketMakerData, OutcomeTableValue, Status, Ternary } from '../../../../util/types'
+import { GelatoData, MarketMakerData, OutcomeTableValue, Status, TaskReceipt, Ternary } from '../../../../util/types'
 import { Button, ButtonContainer, ButtonTab } from '../../../button'
 import { ButtonType } from '../../../button/button_styling_types'
 import { BigNumberInput, TextfieldCustomPlaceholder } from '../../../common'
@@ -47,6 +47,10 @@ import { WarningMessage } from '../../common/warning_message'
 
 interface Props extends RouteComponentProps<any> {
   marketMakerData: MarketMakerData
+  gelatoTask?: {
+    submittedTaskReceipt: TaskReceipt
+    withdrawDate: Date
+  }
   theme?: any
 }
 
@@ -73,7 +77,7 @@ const WarningMessageStyled = styled(WarningMessage)`
 const logger = getLogger('Market::Fund')
 
 const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
-  const { marketMakerData } = props
+  const { gelatoTask, marketMakerData } = props
   const {
     address: marketMakerAddress,
     balances,
@@ -90,7 +94,6 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
 
   const { buildMarketMaker, conditionalTokens } = useContracts(context)
   const marketMaker = buildMarketMaker(marketMakerAddress)
-  const defaultCondition = getDefaultGelatoCondition(networkId)
 
   const signer = useMemo(() => provider.getSigner(), [provider])
   const [allowanceFinished, setAllowanceFinished] = useState(false)
@@ -104,7 +107,6 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
   const [modalTitle, setModalTitle] = useState<string>('')
   const [message, setMessage] = useState<string>('')
   const [isModalTransactionResultOpen, setIsModalTransactionResultOpen] = useState(false)
-  const [gelatoCondition, setGelatoCondition] = useState<GelatoData>(defaultCondition)
 
   const resolutionDate = marketMakerData.question.resolution.getTime()
   const currentDate = new Date().getTime()
