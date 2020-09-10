@@ -25,7 +25,7 @@ import {
   formatBigNumber,
   formatNumber,
 } from '../../../../util/tools'
-import { GelatoData, MarketMakerData, OutcomeTableValue, Status, Ternary } from '../../../../util/types'
+import { GelatoData, MarketMakerData, OutcomeTableValue, Status, TaskReceipt, Ternary } from '../../../../util/types'
 import { Button, ButtonContainer, ButtonTab } from '../../../button'
 import { ButtonType } from '../../../button/button_styling_types'
 import { BigNumberInput, TextfieldCustomPlaceholder, TitleValue } from '../../../common'
@@ -45,6 +45,10 @@ import { WarningMessage } from '../../common/warning_message'
 
 interface Props extends RouteComponentProps<any> {
   marketMakerData: MarketMakerData
+  gelatoTask?: {
+    submittedTaskReceipt: TaskReceipt
+    withdrawDate: Date
+  }
   theme?: any
   switchMarketTab: (arg0: string) => void
 }
@@ -91,7 +95,7 @@ const UserDataRow = styled.div`
 const logger = getLogger('Market::Fund')
 
 const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
-  const { marketMakerData, switchMarketTab } = props
+  const { gelatoTask, marketMakerData, switchMarketTab } = props
   const {
     address: marketMakerAddress,
     balances,
@@ -108,7 +112,6 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
 
   const { buildMarketMaker, conditionalTokens } = useContracts(context)
   const marketMaker = buildMarketMaker(marketMakerAddress)
-  const defaultCondition = getDefaultGelatoCondition(networkId)
 
   const signer = useMemo(() => provider.getSigner(), [provider])
   const [allowanceFinished, setAllowanceFinished] = useState(false)
@@ -124,7 +127,6 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
   const [modalTitle, setModalTitle] = useState<string>('')
   const [message, setMessage] = useState<string>('')
   const [isModalTransactionResultOpen, setIsModalTransactionResultOpen] = useState(false)
-  const [gelatoCondition, setGelatoCondition] = useState<GelatoData>(defaultCondition)
 
   useEffect(() => {
     setIsNegativeAmountToFund(formatBigNumber(amountToFund, collateral.decimals).includes('-'))
