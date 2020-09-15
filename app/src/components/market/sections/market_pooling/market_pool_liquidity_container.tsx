@@ -3,19 +3,20 @@ import React from 'react'
 import { MarketMakerData, TaskReceipt } from '../../../../util/types'
 
 import { MarketPoolLiquidity } from './market_pool_liquidity'
+import useTraceUpdate from 'use-trace-update'
 
 interface Props {
   marketMakerData: MarketMakerData
-  gelatoTask?: {
-    submittedTaskReceipt: TaskReceipt
-    withdrawDate: Date
-  }
+  // gelatoTask?: {
+  //   submittedTaskReceipt: TaskReceipt
+  //   withdrawDate: Date
+  // }
 }
 
 const MarketPoolLiquidityContainer: React.FC<Props> = (props: Props) => {
-  const { gelatoTask, marketMakerData } = props
+  const { /*gelatoTask*/ marketMakerData } = props
 
-  return <MarketPoolLiquidity gelatoTask={gelatoTask} marketMakerData={marketMakerData} />
+  return <MarketPoolLiquidity /*gelatoTask={gelatoTask}*/ marketMakerData={marketMakerData} />
 }
 
 export { MarketPoolLiquidityContainer }

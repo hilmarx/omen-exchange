@@ -162,7 +162,7 @@ interface Props {
     question: string
     category: string
     resolution: Date | null
-    gelatoCondition: GelatoData
+    gelatoData: GelatoData
     arbitrator: Arbitrator
     spread: number
     funding: BigNumber
@@ -171,14 +171,13 @@ interface Props {
   marketCreationStatus: MarketCreationStatus
   handleCollateralChange: (collateral: Token) => void
   handleTradingFeeChange: (fee: string) => void
-  handleGelatoConditionChange: (gelatoCondition: GelatoData) => any
-  handleGelatoConditionInputsChange: (newDate: Date | null) => any
+  handleGelatoDataChange: (gelatoData: GelatoData) => any
+  handleGelatoDataInputsChange: (newDate: Date | null) => any
   handleChange: (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement> | BigNumberInputReturn) => any
   resetTradingFee: () => void
 }
 
 const FundingAndFeeStep: React.FC<Props> = (props: Props) => {
-  console.log('FundingAndFeeStep')
   const context = useConnectedWeb3Context()
   const cpk = useCpk()
   const balance = useSelector((state: BalanceState): Maybe<BigNumber> => state.balance && new BigNumber(state.balance))
@@ -190,8 +189,8 @@ const FundingAndFeeStep: React.FC<Props> = (props: Props) => {
     back,
     handleChange,
     handleCollateralChange,
-    handleGelatoConditionChange,
-    handleGelatoConditionInputsChange,
+    handleGelatoDataChange,
+    handleGelatoDataInputsChange,
     handleTradingFeeChange,
     marketCreationStatus,
     resetTradingFee,
@@ -394,10 +393,11 @@ const FundingAndFeeStep: React.FC<Props> = (props: Props) => {
           />
         )}
         <RecommendedServices
+          isScheduled={false}
           collateral={collateral}
-          gelatoCondition={values.gelatoCondition}
-          handleGelatoConditionChange={handleGelatoConditionChange}
-          handleGelatoConditionInputsChange={handleGelatoConditionInputsChange}
+          gelatoData={values.gelatoData}
+          handleGelatoDataChange={handleGelatoDataChange}
+          handleGelatoDataInputsChange={handleGelatoDataInputsChange}
           noMarginBottom={false}
           resolution={values.resolution !== null ? values.resolution : new Date()}
         />
