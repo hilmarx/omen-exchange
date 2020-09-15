@@ -13,6 +13,7 @@ import {
   useCpkAllowance,
   useFundingBalance,
 } from '../../../../hooks'
+import { useGelatoSubmittedTasks } from '../../../../hooks/useGelatoSubmittedTasks'
 import { ERC20Service } from '../../../../services'
 import { CPKService } from '../../../../services/cpk'
 import { getLogger } from '../../../../util/logger'
@@ -42,14 +43,9 @@ import { TransactionDetailsLine } from '../../common/transaction_details_line'
 import { TransactionDetailsRow, ValueStates } from '../../common/transaction_details_row'
 import { WalletBalance } from '../../common/wallet_balance'
 import { WarningMessage } from '../../common/warning_message'
-import { useGelatoSubmittedTasks } from '../../../../hooks/useGelatoSubmittedTasks'
 
 interface Props extends RouteComponentProps<any> {
   marketMakerData: MarketMakerData
-  // gelatoTask?: {
-  //   submittedTaskReceiptWrapper: TaskReceipt
-  //   withdrawDate: Date
-  // }
   theme?: any
   switchMarketTab: (arg0: string) => void
 }
@@ -148,7 +144,7 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
   const hasZeroAllowance = RemoteData.mapToTernary(allowance, allowance => allowance.isZero())
 
   // Gelato
-  const { submittedTaskReceiptWrapper, withdrawDate, etherscanLink } = useGelatoSubmittedTasks(
+  const { etherscanLink, submittedTaskReceiptWrapper, withdrawDate } = useGelatoSubmittedTasks(
     cpk ? cpk.address : null,
     marketMakerAddress,
     context,
@@ -175,22 +171,9 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
     balances.map(b => b.holdings),
     totalPoolShares,
   )
-
   const depositedTokens = sendAmountsAfterRemovingFunding.reduce((min: BigNumber, amount: BigNumber) =>
     amount.lt(min) ? amount : min,
   )
-
-  const maxCollateralReturnAmount = () => {
-    const sendAmountsAfterRemovingFunding = calcRemoveFundingSendAmounts(
-      fundingBalance, // use instead of amountToRemove
-      balances.map(b => b.holdings),
-      totalPoolShares,
-    )
-
-    return sendAmountsAfterRemovingFunding.reduce((min: BigNumber, amount: BigNumber) =>
-      amount.lt(min) ? amount : min,
-    )
-  }
 
   const sharesAfterRemovingFunding = balances.map((balance, i) => {
     return balance.shares.add(sendAmountsAfterRemovingFunding[i]).sub(depositedTokens)
@@ -329,6 +312,18 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
     setIsModalTransactionResultOpen(true)
   }
 
+  const maxCollateralReturnAmount = (fundingBalance: BigNumber) => {
+    const sendAmountsAfterRemovingFunding = calcRemoveFundingSendAmounts(
+      fundingBalance, // use instead of amountToRemove
+      balances.map(b => b.holdings),
+      totalPoolShares,
+    )
+
+    return sendAmountsAfterRemovingFunding.reduce((min: BigNumber, amount: BigNumber) =>
+      amount.lt(min) ? amount : min,
+    )
+  }
+
   const unlockCollateral = async () => {
     if (!cpk) {
       return
@@ -372,11 +367,10 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     if (withdrawDate) {
-      const gelatoDataCopy = { ...gelatoData }
-      gelatoDataCopy.inputs = withdrawDate
+      const gelatoDataCopy = { ...gelatoData, inputs: withdrawDate }
       setGelatoData(gelatoDataCopy)
     }
-  }, [withdrawDate])
+  }, [gelatoData, withdrawDate])
 
   return (
     <>
@@ -398,21 +392,20 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
           handleGelatoConditionInputsChange={handleGelatoConditionInputsChange}
 
         <RecommendedServices
-          etherscanLink={etherscanLink ? etherscanLink : undefined}
-          taskStatus={submittedTaskReceiptWrapper ? submittedTaskReceiptWrapper.status : undefined}
-          collateralToWithdraw={`${formatBigNumber(maxCollateralReturnAmount(), collateral.decimals)} ${
+          collateralToWithdraw={`${formatBigNumber(maxCollateralReturnAmount(fundingBalance), collateral.decimals)} ${
             collateral.symbol
           }`}
-          isScheduled={submittedTaskReceiptWrapper && submittedTaskReceiptWrapper.status !== 'canceled' ? true : false}
-          resolution={resolutionDate !== null ? marketMakerData.question.resolution : new Date()}
+          etherscanLink={etherscanLink ? etherscanLink : undefined}
           gelatoData={gelatoData}
           handleGelatoDataChange={setGelatoData}
           handleGelatoDataInputsChange={(newDate: Date | null) => {
-            const gelatoDataCopy = { ...gelatoData }
-            gelatoDataCopy.inputs = newDate
+            const gelatoDataCopy = { ...gelatoData, inputs: newDate }
             setGelatoData(gelatoDataCopy)
           }}
+          isScheduled={submittedTaskReceiptWrapper && submittedTaskReceiptWrapper.status !== 'canceled' ? true : false}
           noMarginBottom={false}
+          resolution={resolutionDate !== null ? marketMakerData.question.resolution : new Date()}
+          taskStatus={submittedTaskReceiptWrapper ? submittedTaskReceiptWrapper.status : undefined}
         />
         */}
 
