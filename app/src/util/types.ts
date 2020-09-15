@@ -109,7 +109,6 @@ export interface Arbitrator {
   url: string
 }
 export interface GelatoData {
-  address: string
   id: KnownGelatoCondition
   shouldSubmit: boolean
   inputs: Date | null
@@ -216,7 +215,6 @@ export type GraphResponseTopCategories = {
 }
 
 // Gelato Types
-
 export interface GelatoProvider {
   addr: string
   module: string
@@ -285,12 +283,3 @@ export enum TaskReceiptStatus {
   canceled,
   expired,
 }
-
-// export interface GelatoTaskData {
-//   conditionalToken: string
-//   marketMaker: string
-//   positionId: number[]
-//   conditionId: string
-//   collateral: string
-//   receiver: string
-// }

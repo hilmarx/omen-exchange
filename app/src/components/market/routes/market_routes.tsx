@@ -5,9 +5,8 @@ import React from 'react'
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router'
 
 import { FETCH_DETAILS_INTERVAL, MAX_MARKET_FEE } from '../../../common/constants'
-import { useCheckContractExists, useContracts, useCpk, useMarketMakerData } from '../../../hooks'
+import { useCheckContractExists, useMarketMakerData } from '../../../hooks'
 import { useConnectedWeb3Context } from '../../../hooks/connectedWeb3'
-// import { useGelatoSubmittedTasks } from '../../../hooks/useGelatoSubmittedTasks'
 import { MarketBuyPage, MarketDetailsPage, MarketPoolLiquidityPage, MarketSellPage } from '../../../pages'
 import { getLogger } from '../../../util/logger'
 import { isAddress } from '../../../util/tools'
@@ -27,19 +26,15 @@ interface Props {
   marketMakerAddress: string
 }
 
-// Add Gelato Condition Data Fetching here
 const MarketValidation: React.FC<Props> = (props: Props) => {
-  console.log('Market Routes')
   const context = useConnectedWeb3Context()
-  const { account, library: provider } = context
+  const { account } = context
 
   const { marketMakerAddress } = props
 
   // Validate contract REALLY exists
   const contractExists = useCheckContractExists(marketMakerAddress, context)
-
   const { fetchData, marketMakerData } = useMarketMakerData(marketMakerAddress.toLowerCase())
-
   useInterval(fetchData, FETCH_DETAILS_INTERVAL)
   if (!contractExists) {
     logger.log(`Market address not found`)
@@ -77,17 +72,7 @@ const MarketValidation: React.FC<Props> = (props: Props) => {
         <Route
           exact
           path="/:address/pool-liquidity"
-          render={props => (
-            <MarketPoolLiquidityPage
-              {...props}
-              // gelatoTask={
-              //   submittedTaskReceipt !== null && withdrawDate !== null
-              //     ? { submittedTaskReceipt, withdrawDate }
-              //     : undefined
-              // }
-              marketMakerData={marketMakerData}
-            />
-          )}
+          render={props => <MarketPoolLiquidityPage {...props} marketMakerData={marketMakerData} />}
         />
       )}
       {!account ? (
@@ -114,7 +99,6 @@ const MarketValidation: React.FC<Props> = (props: Props) => {
 
 const MarketRoutes = (props: RouteComponentProps<RouteParams>) => {
   const marketMakerAddress = props.match.params.address
-
   if (!isAddress(marketMakerAddress)) {
     logger.log(`Contract address not valid`)
     return <Redirect to="/" />
