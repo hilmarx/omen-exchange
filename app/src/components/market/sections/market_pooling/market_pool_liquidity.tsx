@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
 import styled from 'styled-components'
 
-import { DEFAULT_GELATO_CONDITION, DOCUMENT_FAQ } from '../../../../common/constants'
+import { DOCUMENT_FAQ } from '../../../../common/constants'
 import {
   useCollateralBalance,
   useConnectedWeb3Context,
@@ -24,7 +24,7 @@ import {
   calcRemoveFundingSendAmounts,
   formatBigNumber,
 } from '../../../../util/tools'
-import { GelatoData, MarketMakerData, OutcomeTableValue, Status, TaskReceipt, Ternary } from '../../../../util/types'
+import { GelatoData, MarketMakerData, OutcomeTableValue, Status, Ternary } from '../../../../util/types'
 import { Button, ButtonContainer, ButtonTab } from '../../../button'
 import { ButtonType } from '../../../button/button_styling_types'
 import { BigNumberInput, TextfieldCustomPlaceholder } from '../../../common'
@@ -44,7 +44,6 @@ import { TransactionDetailsRow, ValueStates } from '../../common/transaction_det
 import { ViewCard } from '../../common/view_card'
 import { WalletBalance } from '../../common/wallet_balance'
 import { WarningMessage } from '../../common/warning_message'
-import useTraceUpdate from 'use-trace-update'
 import { useGelatoSubmittedTasks } from '../../../../hooks/useGelatoSubmittedTasks'
 
 interface Props extends RouteComponentProps<any> {
@@ -296,9 +295,6 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
   const depositedTokensTotal = depositedTokens.add(userEarnings)
   const maybeFundingBalance = useFundingBalance(marketMakerAddress, context)
   const fundingBalance = maybeFundingBalance || Zero
-  console.log(`depositedTokenTotal: `, depositedTokensTotal.toString())
-  console.log('###############')
-  console.log(`fundingBalance: `, fundingBalance.toString())
 
   const walletBalance = formatBigNumber(collateralBalance, collateral.decimals, 5)
   const sharesBalance = formatBigNumber(fundingBalance, collateral.decimals)
@@ -498,7 +494,6 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
             setGelatoData(gelatoDataCopy)
           }}
           noMarginBottom={false}
-          collateral={collateral}
         />
 
         {activeTab === Tabs.deposit && showSetAllowance && (

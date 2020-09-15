@@ -80,7 +80,7 @@ const networks: { [K in NetworkId]: Network } = {
       klerosTokenView: '0xf9b9b5440340123b21bff1ddafe1ad6feb9d6e7f',
       klerosTCR: '0xebcf3bca271b26ae4b162ba560e243055af0e679',
       dxTCR: '0x93DB90445B76329e9ed96ECd74e76D8fbf2590d8',
-      gelatoAddressStorage: '0xaFc624CEb51BC7198C66E6e582d0cEe924Fa73Dd', // UPDATE
+      gelatoAddressStorage: '0x0cB371fcD122634104803cc1A8B4173A7FF61D93',
     },
   },
   [networkIds.RINKEBY]: {
