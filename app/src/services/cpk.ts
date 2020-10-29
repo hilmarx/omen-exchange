@@ -8,7 +8,7 @@ import moment from 'moment'
 import { getLogger } from '../util/logger'
 import { getCPKAddresses, getContractAddress } from '../util/networks'
 import { calcDistributionHint } from '../util/tools'
-import { MarketData, Question, Token, GelatoData, TaskReceiptWrapper } from '../util/types'
+import { GelatoData, MarketData, Question, TaskReceiptWrapper, Token } from '../util/types'
 
 import { ConditionalTokenService } from './conditional_token'
 import { ERC20Service } from './erc20'
@@ -170,10 +170,10 @@ class CPKService {
   }: CPKCreateMarketParams): Promise<string> => {
     try {
       const {
-        gelatoData,
         arbitrator,
         category,
         collateral,
+        gelatoData,
         loadedQuestionId,
         outcomes,
         question,
@@ -358,11 +358,11 @@ class CPKService {
   addFunding = async ({
     amount,
     collateral,
-    marketMaker,
+    conditionId,
+    conditionalTokens,
     gelatoAddressStorage,
     gelatoData,
-    conditionalTokens,
-    conditionId,
+    marketMaker,
     submittedTaskReceiptWrapper,
   }: CPKAddFundingParams): Promise<TransactionReceipt> => {
     try {
@@ -438,11 +438,11 @@ class CPKService {
     conditionId,
     conditionalTokens,
     earnings,
+    gelatoAddressStorage,
     marketMaker,
     outcomesCount,
     sharesToBurn,
     taskReceiptWrapper,
-    gelatoAddressStorage,
   }: CPKRemoveFundingParams): Promise<TransactionReceipt> => {
     try {
       const signer = this.provider.getSigner()

@@ -92,7 +92,7 @@ const UserDataRow = styled.div`
 const logger = getLogger('Market::Fund')
 
 const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
-  const { gelatoTask, marketMakerData, switchMarketTab } = props
+  const { /*gelatoTask ,*/ marketMakerData, switchMarketTab } = props
   const {
     address: marketMakerAddress,
     balances,
@@ -384,8 +384,17 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
             title="Total Pool Tokens"
             value={`${formatBigNumber(totalPoolShares, collateral.decimals)} ${collateral.symbol}`}
           />
-        )}
-        {/* <RecommendedServices
+        </UserDataRow>
+        <UserDataRow>
+          <UserDataTitleValue
+            state={userEarnings.gt(0) ? ValueStates.success : undefined}
+            title="Your Earnings"
+            value={`${userEarnings.gt(0) ? '+' : ''}${formatNumber(
+              formatBigNumber(userEarnings, collateral.decimals),
+            )} ${collateral.symbol}`}
+          />
+
+          {/* <RecommendedServices
           resolution={values.resolution !== null ? values.resolution : new Date()}
           gelatoCondition={gelatoCondition}
           handleGelatoConditionChange={handleGelatoConditionChange}
@@ -409,13 +418,6 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
         />
         */}
 
-        {activeTab === Tabs.deposit && showSetAllowance && (
-          <SetAllowance
-            collateral={collateral}
-            finished={allowanceFinished && RemoteData.is.success(allowance)}
-            loading={RemoteData.is.asking(allowance)}
-            onUnlock={unlockCollateral}
-          />
           <UserDataTitleValue
             state={totalEarnings.gt(0) ? ValueStates.success : undefined}
             title="Total Earnings"
