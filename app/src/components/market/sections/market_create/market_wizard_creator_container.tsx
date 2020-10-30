@@ -34,7 +34,7 @@ const MarketWizardCreatorContainer: FC = () => {
           throw new Error('resolution time was not specified')
         }
 
-        // @dev Change Modal to Gelato Conditioned
+        // @dev Change Modal to Gelato Condition
         setMarketCreationStatus(MarketCreationStatus.creatingAMarket())
 
         const cpk = await CPKService.create(provider)
