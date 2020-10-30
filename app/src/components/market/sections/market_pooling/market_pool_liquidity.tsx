@@ -394,30 +394,12 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
               formatBigNumber(userEarnings, collateral.decimals),
             )} ${collateral.symbol}`}
           />
-
-          {/* <RecommendedServices
+          {/*
+          <RecommendedServices
           resolution={values.resolution !== null ? values.resolution : new Date()}
           gelatoCondition={gelatoCondition}
           handleGelatoConditionChange={handleGelatoConditionChange}
-          handleGelatoConditionInputsChange={handleGelatoConditionInputsChange}
-
-        <RecommendedServices
-          collateralToWithdraw={`${formatBigNumber(maxCollateralReturnAmount(fundingBalance), collateral.decimals)} ${
-            collateral.symbol
-          }`}
-          etherscanLink={etherscanLink ? etherscanLink : undefined}
-          gelatoData={gelatoData}
-          handleGelatoDataChange={setGelatoData}
-          handleGelatoDataInputsChange={(newDate: Date | null) => {
-            const gelatoDataCopy = { ...gelatoData, inputs: newDate }
-            setGelatoData(gelatoDataCopy)
-          }}
-          isScheduled={submittedTaskReceiptWrapper && submittedTaskReceiptWrapper.status !== 'canceled' ? true : false}
-          noMarginBottom={false}
-          resolution={resolutionDate !== null ? marketMakerData.question.resolution : new Date()}
-          taskStatus={submittedTaskReceiptWrapper ? submittedTaskReceiptWrapper.status : undefined}
-        />
-        */}
+          handleGelatoConditionInputsChange={handleGelatoConditionInputsChange} */}
 
           <UserDataTitleValue
             state={totalEarnings.gt(0) ? ValueStates.success : undefined}
@@ -592,6 +574,22 @@ const MarketPoolLiquidityWrapper: React.FC<Props> = (props: Props) => {
           hyperlinkDescription={''}
         />
       )}
+      <RecommendedServices
+        collateralToWithdraw={`${formatBigNumber(maxCollateralReturnAmount(fundingBalance), collateral.decimals)} ${
+          collateral.symbol
+        }`}
+        etherscanLink={etherscanLink ? etherscanLink : undefined}
+        gelatoData={gelatoData}
+        handleGelatoDataChange={setGelatoData}
+        handleGelatoDataInputsChange={(newDate: Date | null) => {
+          const gelatoDataCopy = { ...gelatoData, inputs: newDate }
+          setGelatoData(gelatoDataCopy)
+        }}
+        isScheduled={submittedTaskReceiptWrapper && submittedTaskReceiptWrapper.status !== 'canceled' ? true : false}
+        noMarginBottom={false}
+        resolution={resolutionDate !== null ? marketMakerData.question.resolution : new Date()}
+        taskStatus={submittedTaskReceiptWrapper ? submittedTaskReceiptWrapper.status : undefined}
+      />
       {activeTab === Tabs.deposit && showSetAllowance && (
         <SetAllowance
           collateral={collateral}
